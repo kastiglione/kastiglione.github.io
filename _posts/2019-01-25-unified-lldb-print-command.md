@@ -34,7 +34,7 @@ def vo_else_po(debugger, expression, context, result, _):
         po(expression, frame, result)
 ```
 
-Everyone new to lldb's Python API will have questions, like "what exactly is `@lldb.command(...)`". These lldb quirks will be covered at the end.
+Anyone new to lldb's Python API will have questions, like "what exactly is `@lldb.command(...)`". See the epilog for explanations of these API quirks.
 
 But first, this code calls two helper commands, `vo()` and `po()` which we need to implement.
 
@@ -57,7 +57,7 @@ Note that this returns `True` or `False` to indicate whether `vo` succeeded, and
 
 ### `po` in Python
 
-The `po` command is an alias for `expression -O`, and the matching Python function is [`EvaluateExpression`](https://lldb.llvm.org/python_reference/lldb.SBFrame-class.html#EvaluateExpression).
+The `po` command is an alias for `expression -O`, and the equivalent Python function is [`EvaluateExpression`](https://lldb.llvm.org/python_reference/lldb.SBFrame-class.html#EvaluateExpression).
 
 Similar to `vo()`, the `po()` function can be written by calling the `EvaluateExpression()`, handle any errors, and printing the description. Code:
 
@@ -111,7 +111,8 @@ command script import path/to/vo_else_po.py
 ### Epilog: Python LLDB Answers
 
 1. `@lldb.command("po")` -- decorator that registers the Python function as an lldb command named `po` (this overrides the builtin `po` alias)
-2. `expression` -- variable or expression to print, entered by the user
-3. `context` ([`SBExecutionContext`](https://lldb.llvm.org/python_reference/lldb.SBExecutionContext-class.html)) -- convenience accessor for the current `frame`, `thread`, etc
-4. `result` ([`SBCommandReturnObject`](https://lldb.llvm.org/python_reference/lldb.SBCommandReturnObject-class.html)) -- status of an lldb command, such as if the command failed, and also stores the command's output (see `file=result`)
-5. `description` ([`SBValue.description`](https://lldb.llvm.org/python_reference/lldb.SBValue-class.html#description)) -- generates the object description of a value, this is what separates `p` from `po`
+2. `expression` -- the command input entered by the user, in this case the string is either a variable name or code to evaluate
+3. `context` ([`SBExecutionContext`](https://lldb.llvm.org/python_reference/lldb.SBExecutionContext-class.html)) -- convenience accessor for the current `frame`, `thread`, `process`, etc
+4. `result` ([`SBCommandReturnObject`](https://lldb.llvm.org/python_reference/lldb.SBCommandReturnObject-class.html)) -- status of an lldb command, such as whether it errored, and also stores the command's output (see `file=result`)
+5. `error` ([`SBError`](https://lldb.llvm.org/python_reference/lldb.SBError-class.html)) -- although named "error", this is much like a `Result` type, it can be either `success` or `fail` (`error` is always non nil)
+6. `description` ([`SBValue.description`](https://lldb.llvm.org/python_reference/lldb.SBValue-class.html#description)) -- generates the object description of a value, this is what separates `po` from `p`
