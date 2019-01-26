@@ -112,7 +112,7 @@ command script import path/to/vo_else_po.py
 
 ### swift_po
 
-The behavior described in this blog post is available in swift_po: https://github.com/kastiglione/swift_po.
+The behavior described in this blog post is available in swift_po: [https://github.com/kastiglione/swift_po](https://github.com/kastiglione/swift_po).
 
 swift_po is a simple replacement for `po`, it avoids memory leaks caused by `po`, accepts object pointers, and automatically uses `vo` as demonstrated here.
 
