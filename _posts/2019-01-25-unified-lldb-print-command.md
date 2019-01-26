@@ -110,6 +110,12 @@ To use it, add the following to your `~/.lldbinit`:
 command script import path/to/vo_else_po.py
 ```
 
+### swift_po
+
+The behavior described in this blog post is available in swift_po: https://github.com/kastiglione/swift_po.
+
+swift_po is a simple replacement for `po`, it avoids memory leaks caused by `po`, accepts object pointers, and automatically uses `vo` as demonstrated here.
+
 ### Epilog: Python LLDB Answers
 
 1. `@lldb.command("po")` -- decorator that registers the Python function as an lldb command named `po` (this overrides the builtin `po` alias)
