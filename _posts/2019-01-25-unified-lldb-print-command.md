@@ -34,6 +34,8 @@ def vo_else_po(debugger, expression, context, result, _):
         po(expression, frame, result)
 ```
 
+This will first try the expression as a variable, and otherwise fallback to full expression evaluation.
+
 Anyone new to lldb's Python API will have questions, like "what exactly is `@lldb.command(...)`". See the epilog for explanations of these API quirks.
 
 But first, this code calls two helper commands, `vo()` and `po()` which we need to implement.
@@ -53,7 +55,7 @@ def vo(expression, frame, result):
     return True
 ```
 
-Note that this returns `True` or `False` to indicate whether `vo` succeeded, and whether or not to call `po()`. 
+This function returns `True` if the expression is the name of a variable, or a variable expression like `foo.bar`. Otherwise it returns `False` to indicate that `vo` failed, and to proceed with `po()`.
 
 ### `po` in Python
 
