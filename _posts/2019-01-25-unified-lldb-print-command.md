@@ -9,7 +9,7 @@ LLDB has a pair of new aliases, `v` and `vo`, and this is of interest because of
 
 > The LLDB debugger has a new command alias, `v`, for the “frame variable” command to print variables in the current stack frame. Because it bypasses the expression evaluator, `v` can be a lot faster and should be preferred over `p` or `po`.
 
-Most lldb users are quite used to `po`, which means this addition, _and this advice_, is going to change people's workflow. Before printing, you now might ask and answer yourself "Do I need `vo` or `po`"? This is another case where lldb seems to be designed to expose, rather than abstract, the implementation details of a debugger. This isn't the right choice for the majority of debugger users.
+Most lldb users are used to `po`, which means this addition, _and this advice_, is going to change people's workflow. Before printing, you now might ask and answer yourself "Do I need `vo` or `po`"? This is another case where lldb seems to be designed to expose, rather than abstract, the implementation details of a debugger. This isn't the right choice for the majority of debugger users.
 
 Fortunately, a Python `if` statement can give us a single unified print command that makes the right `vo` or `po` choice. At its essence, the logic is:
 
@@ -20,7 +20,7 @@ if not vo(expression):
 
 ### Details, Code
 
-In addition to providing a single unified print command, this blog post aims to teach a little lldb Python. Being able to make the debugger do whatever you need feels really good, and I'd love for everyone to feel that from time to time. You don't need to know Python, like JavaScript, anyone can write Python without knowing it. Internet searches and trial and error get you _really_ far.
+In addition to providing a single unified print command, this blog post aims to teach a little lldb Python. Being able to make the debugger do whatever you need feels really good, and I'd love for everyone to feel that from time to time. You don't need to know Python, -- like JavaScript, anyone can write Python without knowing it. Internet searches and trial and error get you _really_ far.
 
 Here's the top level code for the unified print command:
 
@@ -42,7 +42,7 @@ But first, this code calls two helper commands, `vo()` and `po()` which we need 
 
 The `vo` command is an alias for `frame variable -O`, and the matching Python function is [`GetValueForVariablePath`](https://lldb.llvm.org/python_reference/lldb.SBFrame-class.html#GetValueForVariablePath).
 
-It's fairly simple to implement `vo`, call `GetValueForVariablePath()`, handle any errors, and printing the description. The code is:
+It's fairly simple to implement `vo`, call `GetValueForVariablePath()`, handle any errors, and print the description. The code is:
 
 ```python
 def vo(expression, frame, result):
@@ -59,7 +59,7 @@ Note that this returns `True` or `False` to indicate whether `vo` succeeded, and
 
 The `po` command is an alias for `expression -O`, and the equivalent Python function is [`EvaluateExpression`](https://lldb.llvm.org/python_reference/lldb.SBFrame-class.html#EvaluateExpression).
 
-Similar to `vo()`, the `po()` function can be written by calling the `EvaluateExpression()`, handle any errors, and printing the description. Code:
+Similar to `vo()`, the `po()` function can be written by calling the `EvaluateExpression()`, handling any errors, and printing the description. Code:
 
 ```python
 def po(expression, frame, result):
