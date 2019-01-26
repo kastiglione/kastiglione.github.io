@@ -112,6 +112,6 @@ command script import path/to/vo_else_po.py
 
 1. `@lldb.command("po")` -- decorator that registers the Python function as an lldb command named `po` (this overrides the builtin `po` alias)
 2. `expression` -- variable or expression to print, entered by the user
-3. `context` ([`SBExecutionContext`](https://lldb.llvm.org/python_reference/lldb.SBExecutionContext-class.html)) -- convenience accessor for current `frame`, `thread`, etc
+3. `context` ([`SBExecutionContext`](https://lldb.llvm.org/python_reference/lldb.SBExecutionContext-class.html)) -- convenience accessor for the current `frame`, `thread`, etc
 4. `result` ([`SBCommandReturnObject`](https://lldb.llvm.org/python_reference/lldb.SBCommandReturnObject-class.html)) -- status of an lldb command, such as if the command failed, and also stores the command's output (see `file=result`)
 5. `description` ([`SBValue.description`](https://lldb.llvm.org/python_reference/lldb.SBValue-class.html#description)) -- generates the object description of a value, this is what separates `p` from `po`
