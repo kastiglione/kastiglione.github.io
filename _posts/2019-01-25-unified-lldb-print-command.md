@@ -40,7 +40,7 @@ But first, this code calls two helper commands, `vo()` and `po()` which we need 
 
 ### `vo` in Python
 
-The `vo` command is an alias for `frame variable`, and the matching Python function is [`GetValueForVariablePath`](https://lldb.llvm.org/python_reference/lldb.SBFrame-class.html#GetValueForVariablePath).
+The `vo` command is an alias for `frame variable -O`, and the matching Python function is [`GetValueForVariablePath`](https://lldb.llvm.org/python_reference/lldb.SBFrame-class.html#GetValueForVariablePath).
 
 It's fairly simple to implement `vo`, call `GetValueForVariablePath()`, handle any errors, and printing the description. The code is:
 
@@ -97,8 +97,9 @@ def po(expression, frame, result):
     value = frame.EvaluateExpression(expression)
     if value.error.fail:
         result.SetError(value.error)
-        return
+        return False
     print(value.description, file=result)
+    return True
 ```
 
 To use it, add the following to your `~/.lldbinit`:
