@@ -5,7 +5,7 @@ date:   2020-09-11 00:16:23 -0800
 categories: git
 ---
 
-A few years ago, [Keith Smiley](https://twitter.com/smileykeith) and I just had
+A few years ago, [Keith Smiley](https://twitter.com/smileykeith) and I had just
 read [Stacked Diffs Versus Pull
 Requests](https://jg.gg/2018/09/29/stacked-diffs-versus-pull-requests/) by
 Jackson Gabbard. It's a good write up. This got us discussing the shortcomings
@@ -20,7 +20,7 @@ its weaknesses.
 
 ### tl;dr
 
-1. All commits are done on `main` (aka `master`) - see below for some benefits
+1. All development is done as commits on local `main` (aka `master`) - see below for some benefits
 2. Everything is done through regular old commits, branches are a (necessary) implementation detail
 3. Branch creation and updates are mostly automatically managed
 4. Simple interface, run `git newpr` and `git updatepr`
