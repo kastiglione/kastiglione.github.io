@@ -14,7 +14,7 @@ in git and GitHub, and brainstorming what a better workflow might look like.
 In the next couple weeks we messed around with some scripts I wrote and quickly
 found an approach that worked quite well for us, that we would use daily from
 then on. People who use this workflow tend to *really* like it. I definitely now
-see work branches as a something to be avoid. This blog post gives and
+see work branches as a something to be avoided. This blog post gives and
 introduction to the details, provides some starter scripts, and mentions some
 its weaknesses.
 
