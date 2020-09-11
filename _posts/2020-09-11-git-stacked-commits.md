@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Git: Stacked Commits"
-date:   2020-09-10 10:26:23 -0800
+date:   2020-09-11 00:16:23 -0800
 categories: git
 ---
 
