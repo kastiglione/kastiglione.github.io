@@ -234,6 +234,14 @@ Notice that the order has changed, the fixup for PR1 has been positioned just
 after the commit for PR1. And, it's marked as `fixup`, which causes git to
 squash it into PR1.
 
+After `git rebase -i --autosquash` completes, the PR commit has been amended and
+the results are:
+
+```
+* 9ab272924f2 [OtherFeature] This is PR2
+* f5aaf43dea5 [SomeFeature] This is PR1
+```
+
 To state the obvious, interactive rebase typically involves actual user
 interaction. We the user reorder commits, etc. However squashing can be achieved
 using the two commands, `commit --fixup` first, followed by `rebase
