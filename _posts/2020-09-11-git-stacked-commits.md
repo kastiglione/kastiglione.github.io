@@ -158,21 +158,21 @@ git commit --amend --fixup="$pr_commit"
 git rebase --interactive --autosquash "${pr_commit}^"
 ```
 
-(You're probably wondering what these wild commands are, they'll be explained shortly.)
+To make reading easier, this implementation has a limitation: Only the latest
+commit - `HEAD` on `main`, can be used to update a PR. Even with this
+limitation, both GUI tools and `git rebase -i` will allow you to move any commit
+you want to the top of the branch, where you can then run `git updatepr`.
 
-To reduce the complexity of this example implementation (between bash and the
-wtf commands at the end, this short script is already somewhat complex), this
-version has a limitation. Only the latest commit - `HEAD` on `main`, can be used
-to update a PR. Even with this limitation, both GUI tools and `git rebase -i`
-will allow you to move any commit you want to the top of the branch, where you
-can then run `git updatepr`.
+This limitation can be removed, it exists only to reduce the complexity of this
+example implementation. Between bash and the wtf commands at the end, this short
+script is already somewhat complex.
 
 To use this script, run `git updatepr <pr_sha>`. This will update a PR
 previously created using `git newpr`, using the latest commit as the update.
 
-#### What's Really Going ON
+#### Explaining fixup/interactive/autosquash
 
-Ok, this needs more explaining. While `git newpr` is hopefully fairly
+This part needs more explaining. While `git newpr` is hopefully fairly
 straightforward, `git updatepr` is not.
 
 The core idea is this, in this stacked commits workflow PRs live two parallel
