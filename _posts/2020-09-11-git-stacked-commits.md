@@ -13,10 +13,9 @@ in git and GitHub, and brainstorming what a better workflow might look like.
 
 In the next couple weeks we messed around with some scripts I wrote and quickly
 found an approach that worked quite well for us, that we would use daily from
-then on. People who use this workflow tend to *really* like it. I definitely now
-see work branches as a something to be avoided. This blog post gives and
-introduction to the details, provides some starter scripts, and mentions some
-its weaknesses.
+then on. People who use this workflow tend to *really* like it. I now see work
+branches as something to be avoided. This blog post gives an introduction to the
+details, provides some starter scripts, and mentions some weaknesses.
 
 ### tl;dr
 
@@ -26,9 +25,9 @@ its weaknesses.
 4. Simple interface, run `git newpr` and `git updatepr`
 
 The motivating goal is to not have work spread out across many branches. Branch
-switches are context switches, for you and your tools (see: build times).  Some
-people use multiple checkouts/worktrees to support multiple branches, which is a
-not exactly lightweight. Instead, this workflow puts all work in progress on
+switches are context switches, for you and your tools (see: build times). Some
+people use multiple checkouts/worktrees to support multiple branches, which is
+not exactly lightweight. Instead, this workflow puts all work-in-progress on
 your main branch.
 
 ### Benefits
@@ -37,10 +36,10 @@ your main branch.
 2. Less build system thrash, which is time saved (unless you have a [build cache](https://bazel.build/))
 3. Reduced cognitive overhead of naming, managing, and remembering branches
 
-There's more to say about benefits, but the goal of this writing is not to sell
-the idea of stacked diffs. I'm hoping you're reading because you already want a
-stacked diff style workflow for git/GitHub. Again, [Stacked Diffs Versus Pull
-Requests](https://jg.gg/2018/09/29/stacked-diffs-versus-pull-requests/) by
+There's more to say about benefits, but it's not the goal of this writing to
+sell the idea of stacked diffs. I'm hoping you're reading because you already
+want a stacked diff style workflow for git/GitHub. Again, [Stacked Diffs Versus
+Pull Requests](https://jg.gg/2018/09/29/stacked-diffs-versus-pull-requests/) by
 Jackson Gabbard is a good read on the subject. This workflow is common at some
 big tech companies, many engineers know and want this workflow, but doing it
 with git/GitHub requires some supplementary tools, and that's what this post is
@@ -110,12 +109,12 @@ leaves out some nice features such as:
 
 ### Part 2: Updating a Pull Requests from a Commit
 
-Of course, most Pull Requests have one or more updates. Sometimes CI finds
-issues, reviewers requests changes, or we see that we made a boneheaded mistake.
-The stacked commits workflow wouldn't be useful if there wasn't a convenient way
-to update PRs too. As mentioned above, a stacked commit workflow is centered on
-commits not branches, so what we need is a tool that can take a commit, and add
-it to a PR.
+Of course, most Pull Requests have updates. Sometimes CI finds issues, reviewers
+requests changes, or we see that we made a boneheaded mistake. The stacked
+commits workflow wouldn't be useful if there wasn't a convenient way to update
+PRs too. As mentioned above, a stacked commit workflow is centered on commits
+not branches, so what we need is a tool that can take a commit, and add it to a
+PR.
 
 Let's call this tool `git updatepr`. Here is a basic implementation of it:
 
@@ -184,7 +183,7 @@ lives:
 On `main`, you see each PR as an atomic whole, a single (squashed) commit. This
 is convenient, and follows the convention of known stacked diff workflows.
 
-Conversely, the branch created for by `git newpr` does not use squashing.  Each
+Conversely, the branch created for by `git newpr` does not use squashing. Each
 time `git updatepr` is run, a commit is 'picked over to the branch. This way,
 branches preserve full history. This is reviewer friendly, updates to the PR can
 be seen through each of its commits. No force pushing is required.
