@@ -5,7 +5,7 @@ date:   2021-11-11 19:27:59 -0800
 categories: builds
 ---
 
-This is a collection of suggestions to make your Swift or Clang build times faster. Out of the box, Swift builds are configured to cover most cases, by building everything and anything, but that increases build time. I assume few people need the kitchen sink build. This article describes different ways to reduce build times, often by building less. These are in no particular order. You can take my word for it, or you can try these out and measure the savings for yourself, but the techniques included aren't backed by numbers. The time savings of these optimizations will be most noticable in full builds, but they can also help incremental builds too.
+This is a collection of suggestions to make your Swift or Clang build times faster. Out of the box, Swift builds are configured to cover most cases, by building everything and anything, but that increases build time. I assume few people need the kitchen sink build. This article describes different ways to reduce build times, often by building less. These are in no particular order. You can take my word for it, or you can try these out and measure the savings for yourself, but I have intentionally avoided numbers. The time savings of these optimizations will be most noticable in full builds, but they can also help incremental builds too.
 
 ### Delete Sibling Repos (Swift)
 
@@ -102,3 +102,27 @@ The Swift docs mention this one, but consider using a local build cache (such as
 With a build cache, the third step could be up to 100% cache hits (depends on how much cache space is configured).
 
 Note that `sccache` isn't aware of `CCC_OVERRIDE_OPTIONS`, and could lead to mistaken cache hits. To get around this, I have a small wrapper script which checks for `CCC_OVERRIDE_OPTIONS`. If the env variable exists, the real `sccache` is not used. If the env variable does not exist, then then `sccache` is called.
+
+## Summary
+
+For Swift's `build-script`, these are the flags I use to reduce build time:
+
+```sh
+build-script \
+  --release \
+  --build-subdir Release.noindex \
+  --skip-build-{clang-tools-extra,benchmarks} \
+  --skip-{ios,tvos,watchos} \
+  --llvm-enable-modules \
+  --llvm-targets-to-build host --swift-darwin-supported-archs "$(uname -m)"
+```
+
+For LLVM and Clang, these are the cmake flags I use to save build time:
+
+```sh
+cmake \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DLLVM_TARGETS_TO_BUILD=host \
+  -DLLVM_ENABLE_MODULES=ON \
+  -B build.noindex
+```
