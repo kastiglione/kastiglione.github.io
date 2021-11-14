@@ -53,15 +53,15 @@ For `llvm-project`, name your build directory `build.noindex`. For `swift-projec
 
 Many people who build a compiler use it only to produce binaries that run on the host machine. If this is true for you, you can save time by not building LLVM and Swift with support for other architectures.
 
-Clang: `LLVM_TARGETS_TO_BUILD=host` (or Native)
-Swift: `--llvm-targets-to-build host` and `--swift-darwin-supported-archs "$(uname -m)"`
+* Clang: `LLVM_TARGETS_TO_BUILD=host` (or Native)
+* Swift: `--llvm-targets-to-build host` and `--swift-darwin-supported-archs "$(uname -m)"`
 
 ### Enable Clang Modules (Swift & Clang)
 
 [Clang modules](https://clang.llvm.org/docs/Modules.html) also serve the role of precompiled headers, which are designed to speed up compilation. For LLVM, I don't know why modules are not enabled by default.
 
-Clang: `LLVM_ENABLE_MODULES=ON`
-Swift: `--llvm-enable-modules`
+* Clang: `LLVM_ENABLE_MODULES=ON`
+* Swift: `--llvm-enable-modules`
 
 ### Skip Platforms (Swift)
 
