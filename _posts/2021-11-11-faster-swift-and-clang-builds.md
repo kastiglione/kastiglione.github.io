@@ -47,7 +47,7 @@ There are other ways you could do this without `CCC_OVERRIDE_OPTIONS` (via a cus
 
 On macOS, directories with a `.noindex` suffix are not indexed by Spotlight. Builds produce a lot of build artifacts, and you probably don't want any CPU contention created by Spotlight indexing during the build.
 
-For `llvm-project`, name your build directory `build.noindex`. For `swift-project`, you can either use `SWIFT_BUILD_ROOT`, or `--build-subdir`. I use `--build-subdir Release.noindex`, which for example creates build directories such as `build/Release.noindex/swift-macosx-arm64`.
+For `llvm-project`, name your build directory `build.noindex`. For `swift-project`, you can either use `SWIFT_BUILD_ROOT`, or `--build-subdir`. I use `--build-subdir Release.noindex`, which creates a swift build directory named `build/Release.noindex/swift-macosx-arm64`.
 
 ### Make a Non-Cross Compiler (Swift & Clang)
 
