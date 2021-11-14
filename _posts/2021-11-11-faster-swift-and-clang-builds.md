@@ -51,7 +51,7 @@ For `llvm-project`, name your build directory `build.noindex`. For `swift-projec
 
 ### Make a Non-Cross Compiler (Swift & Clang)
 
-The common case when building a compiler is to use it only to produce binaries that run on the host machine. If this is true for you, you can save time by not compiling support for all the other architectures LLVM and Swift with support.
+The common case when building a compiler is to use it only to produce binaries that run on the host machine. If this is true for you, you can save time by not compiling support for all the other architectures LLVM and Swift support.
 
 * Clang: `LLVM_TARGETS_TO_BUILD=host` (or Native)
 * Swift: `--llvm-targets-to-build host` and `--swift-darwin-supported-archs "$(uname -m)"`
