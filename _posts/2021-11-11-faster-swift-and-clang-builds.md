@@ -5,19 +5,19 @@ date:   2021-11-11 19:27:59 -0800
 categories: builds
 ---
 
-This is a collection of suggestions to make your Swift or Clang build times faster. Out of the box, Swift builds are configured to cover most cases, by building everything and anything, but that increases build time. I assume few people need the kitchen sink build. This article describes different ways to reduce build times, often by building less. These are in no particular order. You can take my word for it, or you can try these out and measure the savings for yourself, but I have intentionally avoided numbers. The time savings of these optimizations will be most noticable in full builds, but they can also help incremental builds too.
+This is a collection of suggestions to make your Swift or Clang build times faster. Out of the box, the Swift build is designed to build everything and anything, because it doesn't know what you need and what you don't. This makes for longer build times. I think few people need the kitchen sink build, and by building less, you reduce build times. These suggestions are in no particular order. You can take my word for it, or you can try these out and measure the savings for yourself, but I have intentionally avoided numbers. The time savings of these optimizations will be most noticable in full builds, but they can also help incremental builds too.
 
 ### Delete Sibling Repos (Swift)
 
-The initial setup instructions for `swift-project` involves cloning 30+ related Swift repos. Most of these are optional. Review these repos and delete any that you don't need for your purposes. For example, to build the Swift compiler, you need `cmark`, `llvm-project`, and of course `swift`. These three repos are typically all I ever use. To build the new `swift-driver`, keep `swift-driver`, `llbuild`, `yams`, etc.
+The initial setup instructions for `swift-project` involves cloning 30+ related Swift repos. Most of these are optional. Review these repos and delete any that you don't need for your purposes. For example, to build the Swift compiler, you need `cmark`, `llvm-project`, and of course `swift`. These three repos are typically all I ever use. To also build the new `swift-driver`, keep `swift-driver`, `llbuild`, `yams`, `swift-argument-parser`, and `swift-tools-support-core`.
 
 ### Build for Release (Swift & Clang)
 
-Release builds are faster in two ways. First, `Release` compile times are faster than `RelWithDebInfo`. This is because generating debug info for all of LLVM/Clang/Swift has its overhead. Second, the test suite runs faster with `Release` builds than with `Debug` builds. If you're running low on disk space, skipping debug info results in a smaller build directory.
+Release builds are faster in two ways. First, `Release` compile times are faster than `RelWithDebInfo`. This is because generating debug info for all of LLVM/Clang/Swift has its overhead. Second, the test suite runs faster with `Release` builds than with `Debug` builds. As an extra, if you're running low on disk space, skipping debug info results in a smaller build directory.
 
-However this isn't "free", this is a tradeoff that optimizes for faster build and test times, by pessimizes the debug experience. Optimized code is harder to debug, but it can be doable if you at least have debug info (ex `RelWithDebInfo`). Without debug info (`Release`), you'll be stepping through assembly.
+However this isn't "free", this is a tradeoff optimizing for faster build and test times, by pessimizing the debug experience. Optimized code is harder to debug, but it can at least be doable if you have debug info (`RelWithDebInfo`). Without debug info (`Release`), you'll be stepping through assembly.
 
-One solution to this is to selectively compile some files for debugging. At any one time, most people are debugging a small number of files, sometimes just one or two. Individual files can be compiled for debugging by doing the following:
+One solution to this is to selectively compile some files for debugging. At any one time, most people are debugging a small number of files, sometimes just one or two files, and generally at most a whole module or two. Individual files can be compiled for debugging by doing the following:
 
 1. Run `touch` on the files to update their timestamp
 2. Re-run `ninja` using `CCC_OVERRIDE_OPTIONS="# O0 +-g"`
@@ -32,7 +32,7 @@ This workflow uses three commands, `#`, `O` and `+`, which do the following:
 
 Using `O0` ensures the file is compiled with `-O0`, and using `+-g` adds the `-g` flag to generate debug info.
 
-Admittedly, this workflow is not ideal, the extra touch & build steps are manual and add a bit of time, but I find the workflow to be a net positive.
+Admittedly, this workflow is not ideal, the extra touch & build steps are manual and add a bit of time, but overall I find the workflow to be a net positive.
 
 I use this workflow for my edit-compile-test cycle. For every file I edit, I want it compiled at `-O0`, to achieve this I use `CCC_OVERRIDE_OPTIONS` for all incremental builds. To make this easy, I use a zsh global macro:
 
@@ -45,13 +45,13 @@ There are other ways you could do this without `CCC_OVERRIDE_OPTIONS` (via a cus
 
 ### Use a `.noindex` Build Directory (Swift & Clang, macOS only)
 
-On macOS, directories with a `.noindex` suffix are not indexed by Spotlight. Builds produce a lot of build artifacts, and you probably don't want Spotlight causing any CPU contention during the build. I don't know of any use cases for having object files and other artifacts be indexed in Spotlight.
+On macOS, directories with a `.noindex` suffix are not indexed by Spotlight. Builds produce a lot of build artifacts, and you probably don't want any CPU contention created by Spotlight indexing during the build.
 
 For `llvm-project`, name your build directory `build.noindex`. For `swift-project`, you can either use `SWIFT_BUILD_ROOT`, or `--build-subdir`. I use `--build-subdir Release.noindex`, which for example creates build directories such as `build/Release.noindex/swift-macosx-arm64`.
 
 ### Make a Non-Cross Compiler (Swift & Clang)
 
-Many people who build a compiler use it only to produce binaries that run on the host machine. If this is true for you, you can save time by not building LLVM and Swift with support for other architectures.
+The common case when building a compiler is to use it only to produce binaries that run on the host machine. If this is true for you, you can save time by not compiling support for all the other architectures LLVM and Swift with support.
 
 * Clang: `LLVM_TARGETS_TO_BUILD=host` (or Native)
 * Swift: `--llvm-targets-to-build host` and `--swift-darwin-supported-archs "$(uname -m)"`
