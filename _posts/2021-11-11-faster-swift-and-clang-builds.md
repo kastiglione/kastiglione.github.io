@@ -79,7 +79,7 @@ In the past few years, there are more linkers to try. Try out new linkers from t
 
 Whether you're using the fastest linker or not, there may be ways to speed up linking via linker flags. When the linker is invoked through the clang driver (which is true for Swift & Clang projects), then you can use our new friend `CCC_OVERRIDE_OPTIONS` to specifiy linker flags that speed up link time. Here's a starting point for macOS:
 
-```
+```sh
 CCC_OVERRIDE_OPTIONS="# +-Wl,-random_uuid +-Wl,-no_deduplicate x-Wl,-dead_strip"
 ```
 
@@ -89,7 +89,7 @@ This applies the following changes:
 * Don't spend time finding duplicate symbols, and unifying them (add `-no_deduplicate`)
 * Don't spend time finding unused symbols, and then stripping them (remove `-dead_strip`)
 
-These and some other linking tips can be found here.
+These and some other linking tips come from the [zld README](https://github.com/michaeleisel/zld/blob/741a5bf2b73b15d26221443a5fd789494c042264/README.md#other-things-to-speed-up-linking).
 
 ### Use a Build Cache (Swift & Clang)
 
