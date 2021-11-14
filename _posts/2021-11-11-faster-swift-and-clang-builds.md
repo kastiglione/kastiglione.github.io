@@ -5,7 +5,7 @@ date:   2021-11-11 19:27:59 -0800
 categories: builds
 ---
 
-This is a collection of suggestions to make your Swift or Clang build times faster. Out of the box, the Swift build is designed to build everything and anything, because it doesn't know what you need and what you don't. This makes for longer build times. I think few people need the kitchen sink build, and by building less, you reduce build times. These suggestions are in no particular order. You can take my word for it, or you can try these out and measure the savings for yourself, but I have intentionally avoided numbers. The time savings of these optimizations will be most noticeable in full builds, but they can also help incremental builds too.
+This is a collection of suggestions that reduce the time it takes to build the Swift and Clang compilers. Out of the box, the Swift build is designed to build everything and anything, because it doesn't know what you need and what you don't. This makes for longer build times. I think few people need the kitchen sink build, and by building less, you reduce build times. These suggestions are in no particular order. You can take my word for it, or you can try these out and measure the savings for yourself, but I have intentionally avoided numbers. The time savings of these optimizations will be most noticeable in full builds, but they can also help incremental builds too.
 
 ### Delete Sibling Repos (Swift)
 
