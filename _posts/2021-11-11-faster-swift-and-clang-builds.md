@@ -41,7 +41,7 @@ alias -g DBG='CCC_OVERRIDE_OPTIONS="# O0 +-g"'
 DBG ninja clang
 ```
 
-There are other ways you could do this without `CCC_OVERRIDE_OPTIONS` (via a custom `CMAKE_CXX_COMPILER_LAUNCHER`), but I haven't tried it myself.
+There are other ways you could control which files are built for debug, without `CCC_OVERRIDE_OPTIONS`. One way is to create a "compiler launcher" script that adds or removes flags before clang gets called (see [`CMAKE_CXX_COMPILER_LAUNCHER`](https://cmake.org/cmake/help/latest/variable/CMAKE_LANG_COMPILER_LAUNCHER.html#variable:CMAKE_%3CLANG%3E_COMPILER_LAUNCHER)), but I haven't tried this.
 
 ### Use a `.noindex` Build Directory (Swift & Clang, macOS only)
 
