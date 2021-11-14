@@ -5,7 +5,7 @@ date:   2021-11-11 19:27:59 -0800
 categories: builds
 ---
 
-This is a collection of suggestions to make your Swift or Clang build times faster. Out of the box, the Swift build is designed to build everything and anything, because it doesn't know what you need and what you don't. This makes for longer build times. I think few people need the kitchen sink build, and by building less, you reduce build times. These suggestions are in no particular order. You can take my word for it, or you can try these out and measure the savings for yourself, but I have intentionally avoided numbers. The time savings of these optimizations will be most noticable in full builds, but they can also help incremental builds too.
+This is a collection of suggestions to make your Swift or Clang build times faster. Out of the box, the Swift build is designed to build everything and anything, because it doesn't know what you need and what you don't. This makes for longer build times. I think few people need the kitchen sink build, and by building less, you reduce build times. These suggestions are in no particular order. You can take my word for it, or you can try these out and measure the savings for yourself, but I have intentionally avoided numbers. The time savings of these optimizations will be most noticeable in full builds, but they can also help incremental builds too.
 
 ### Delete Sibling Repos (Swift)
 
@@ -41,7 +41,7 @@ alias -g DBG='CCC_OVERRIDE_OPTIONS="# O0 +-g"'
 DBG ninja clang
 ```
 
-There are other ways you could do this without `CCC_OVERRIDE_OPTIONS` (via a custom `CMAKE_CXX_COMPILER_LAUNCHER`), but I haven't tried it muyself.
+There are other ways you could do this without `CCC_OVERRIDE_OPTIONS` (via a custom `CMAKE_CXX_COMPILER_LAUNCHER`), but I haven't tried it myself.
 
 ### Use a `.noindex` Build Directory (Swift & Clang, macOS only)
 
@@ -77,7 +77,7 @@ For Swift, I disable building `clang-tools-extra` and `benchmarks`, using `--ski
 
 In the past few years, there are more linkers to try. Try out new linkers from time to time and use the fastest one that works for you. For Clang, customize `LLVM_USE_LINKER`.
 
-Whether you're using the fastest linker or not, there may be ways to speed up linking via linker flags. When the linker is invoked through the clang driver (which is true for Swift & Clang projects), then you can use our new friend `CCC_OVERRIDE_OPTIONS` to specifiy linker flags that speed up link time. Here's a starting point for macOS:
+Whether you're using the fastest linker or not, there may be ways to speed up linking via linker flags. When the linker is invoked through the clang driver (which is true for Swift & Clang projects), then you can use our new friend `CCC_OVERRIDE_OPTIONS` to specify linker flags that speed up link time. Here's a starting point for macOS:
 
 ```sh
 CCC_OVERRIDE_OPTIONS="# +-Wl,-random_uuid +-Wl,-no_deduplicate x-Wl,-dead_strip"
@@ -99,9 +99,9 @@ The Swift docs mention this one, but consider using a local build cache (such as
 2. Switch to branch B, and build
 3. Switch back to branch A, and build.
 
-With a build cache, the third step could be up to 100% cache hits (depends on how much cache space is configured).
+With a build cache, the third step could be up to 100% cache hits (depending on how much cache space is configured).
 
-Note that `sccache` isn't aware of `CCC_OVERRIDE_OPTIONS`, and could lead to mistaken cache hits. To get around this, I have a small wrapper script which checks for `CCC_OVERRIDE_OPTIONS`. If the env variable exists, the real `sccache` is not used. If the env variable does not exist, then then `sccache` is called.
+Note that `sccache` isn't aware of `CCC_OVERRIDE_OPTIONS`, and could lead to mistaken cache hits. To get around this, I have a small wrapper script which checks for `CCC_OVERRIDE_OPTIONS`. If the env variable exists, then `sccache` is not used. If the env variable does not exist, then `sccache` is called.
 
 ## Summary
 
