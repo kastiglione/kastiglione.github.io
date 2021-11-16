@@ -9,7 +9,9 @@ This is a collection of suggestions that reduce the time it takes to build the S
 
 ### Delete Sibling Repos (Swift)
 
-The initial setup instructions for `swift-project` involves cloning 30+ related Swift repos. Most of these are optional. Review these repos and delete any that you don't need for your purposes. For example, to build the Swift compiler, you need `cmark`, `llvm-project`, and of course `swift`. These three repos are typically all I ever use. To also build the new `swift-driver`, keep `swift-driver`, `llbuild`, `yams`, `swift-argument-parser`, and `swift-tools-support-core`.
+The initial setup instructions for `swift-project` involves cloning 30+ related Swift repos. Most of these are optional, and you may never build. Review these repos and delete any that you don't need for your purposes. For example, to build the Swift compiler (the frontend), you need `cmark`, `llvm-project`, and of course `swift`. These three repos are typically all I ever use.
+
+Some of the repos are optional, but still require you to explicitly opt out from building. At the time of writing, the new `swift-driver` is optional but you need to call `build-script` withi `--skip-early-swift-driver` to opt-out from building it. On the flip side, if you want to build `swift-driver`, then you need to keep the `swift-driver`, `llbuild`, `yams`, `swift-argument-parser`, and `swift-tools-support-core` repos.
 
 ### Build for Release (Swift & Clang)
 
@@ -24,11 +26,14 @@ One solution to this is to selectively compile some files for debugging. At any 
 
 If you haven't seen `CCC_OVERRIDE_OPTIONS` before, it's a Clang environment variable that allows you to override compile flags using its mini-commands. See the [`driver.cpp` source](https://github.com/llvm/llvm-project/blob/93a1fc2e18b452216be70f534da42f7702adbe1d/clang/tools/driver/driver.cpp#L79-L105) for its documentation:
 
-This workflow uses three commands, `#`, `O` and `+`, which do the following:
+This workflow uses three commands, `#`, `O` and `+`. These three, and a few other useful commands do the following:
 
 1. `#` turns on quiet mode (verbose is default)
-2. `O` sets the optimization level to a given level
-3. `+` adds the given flag
+2. `O` sets the optimization level to a given level (removing all other `-O` flags)
+3. `+` appends the given flag at the end of the command line
+4. `x` deletes the given flag
+5. `X` deletes the given flag _and_ the following argument (for space separated values)
+6. `s/XXX/YYY/` substitutes regex "XXX" for string "YYY" on the command line
 
 Using `O0` ensures the file is compiled with `-O0`, and using `+-g` adds the `-g` flag to generate debug info.
 
@@ -75,33 +80,39 @@ For Swift, I disable building `clang-tools-extra` and `benchmarks`, using `--ski
 
 ### Optimize Link Times (Swift & Clang)
 
-In the past few years, there are more linkers to try. Try out new linkers from time to time and use the fastest one that works for you. For Clang, customize `LLVM_USE_LINKER`.
+In recent years, new linkers have been developed giving us more to choose from. It's worth trying out new linkers from time to time and use the fastest one that works for you. For Clang, customize `LLVM_USE_LINKER`.
 
-Whether you're using the fastest linker or not, there may be ways to speed up linking via linker flags. When the linker is invoked through the clang driver (which is true for Swift & Clang projects), then you can use our new friend `CCC_OVERRIDE_OPTIONS` to specify linker flags that speed up link time. Here's a starting point for macOS:
+Whether you're using the fastest linker or not, there may be ways to speed up linking via linker flags. For macOS, here are some linker flags that I know of that can change the speed of linking:
 
-```sh
-CCC_OVERRIDE_OPTIONS="# +-Wl,-random_uuid +-Wl,-no_deduplicate x-Wl,-dead_strip"
-```
-
-This applies the following changes:
-
-* Don't spend time hashing the binary's contents to derive a UUID, instead use a random UUID which is more of a O(1) operation (add `-random_uuid`)
-* Don't spend time finding duplicate symbols, and unifying them (add `-no_deduplicate`)
-* Don't spend time finding unused symbols, and then stripping them (remove `-dead_strip`)
+* `-random_uuid`: don't spend time hashing the binary's contents to derive a UUID, instead use a random UUID which is more of a O(1) operation
+* `-no_deduplicate`: don't spend time finding duplicate symbols & uniquing them
+* `-dead_strip`: do spend time finding unused symbols & stripping them
 
 These and some other linking tips come from the [zld README](https://github.com/michaeleisel/zld/blob/741a5bf2b73b15d26221443a5fd789494c042264/README.md#other-things-to-speed-up-linking).
 
+To try these out, the first two can be added via `CMAKE_EXE_LINKER_FLAGS`. However the last one, `-dead_strip`, needs to be prevented from being added. There are cmake flags to disable it:
+
+* Clang: `LLVM_NO_DEAD_STRIP`
+* Swift: `SWIFT_DISABLE_DEAD_STRIPPING`
+
 ### Use a Build Cache (Swift & Clang)
 
-The Swift docs mention this one, but consider using a local build cache (such as `sccache`). This really helps when switching branches. Consider this scenario:
+The Swift docs also mention this, consider using a local build cache such as `sccache`. In my use, this really helps when switching branches. Consider this scenario:
 
 1. Build on branch A
 2. Switch to branch B, and build
-3. Switch back to branch A, and build.
+3. Switch back to branch A, and build again
 
 With a build cache, the third step could be up to 100% cache hits (depending on how much cache space is configured).
 
-Note that `sccache` isn't aware of `CCC_OVERRIDE_OPTIONS`, and could lead to mistaken cache hits. To get around this, I have a small wrapper script which checks for `CCC_OVERRIDE_OPTIONS`. If the env variable exists, then `sccache` is not used. If the env variable does not exist, then `sccache` is called.
+To use `sccache`, use the following flags:
+
+* Clang: `-DCMAKE_CXX_COMPILER_LAUNCHER=$(which sccache)` (and `CMAKE_C_COMPILER_LAUNCHER` too)
+* Swift: `--sccache`
+
+Note that `sccache` isn't aware of `CCC_OVERRIDE_OPTIONS`, and using it could lead to mistaken cache hits. To get around this, I have a small wrapper script which checks for `CCC_OVERRIDE_OPTIONS`. If the env variable exists, then `sccache` is not used. If the env variable does not exist, then `sccache` is called.
+
+The more branches you work on, the more you stand to gain from a build cache. But, if you do all your work on the main branch, like [stacked commits](https://kastiglione.github.io/git/2020/09/11/git-stacked-commits.html), then a build cache might not gain you much.
 
 ## Summary
 
@@ -114,7 +125,10 @@ build-script \
   --skip-build-{clang-tools-extra,benchmarks} \
   --skip-{ios,tvos,watchos} \
   --llvm-enable-modules \
-  --llvm-targets-to-build host --swift-darwin-supported-archs "$(uname -m)"
+  --llvm-targets-to-build host --swift-darwin-supported-archs "$(uname -m)" \
+  --extra-cmake-options=-DSWIFT_DISABLE_DEAD_STRIPPING=ON \
+  --extra-cmake-options=-DLLVM_NO_DEAD_STRIP=ON \
+  --extra-cmake-options='-DCMAKE_EXE_LINKER_FLAGS="-Wl,-random_uuid -Wl,-no_deduplicate"'
 ```
 
 For LLVM and Clang, these are the cmake flags I use to save build time:
@@ -124,5 +138,7 @@ cmake \
   -DCMAKE_BUILD_TYPE=Release \
   -DLLVM_TARGETS_TO_BUILD=host \
   -DLLVM_ENABLE_MODULES=ON \
+  -DLLVM_NO_DEAD_STRIP=ON \
+  -DCMAKE_EXE_LINKER_FLAGS="-Wl,-random_uuid -WL,-no_deduplicate" \
   -B build.noindex
 ```
