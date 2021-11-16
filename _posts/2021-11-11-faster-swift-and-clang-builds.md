@@ -125,9 +125,10 @@ build-script \
   --skip-build-{clang-tools-extra,benchmarks} \
   --skip-{ios,tvos,watchos} \
   --llvm-enable-modules \
-  --llvm-targets-to-build host --swift-darwin-supported-archs "$(uname -m)" \
-  --extra-cmake-options=-DSWIFT_DISABLE_DEAD_STRIPPING=ON \
-  --extra-cmake-options=-DLLVM_NO_DEAD_STRIP=ON \
+  --llvm-targets-to-build host \
+  --swift-darwin-supported-archs "$(uname -m)" \
+  --extra-cmake-options='-DSWIFT_DISABLE_DEAD_STRIPPING=ON' \
+  --extra-cmake-options='-DLLVM_NO_DEAD_STRIP=ON' \
   --extra-cmake-options='-DCMAKE_EXE_LINKER_FLAGS="-Wl,-random_uuid -Wl,-no_deduplicate"'
 ```
 
