@@ -11,7 +11,7 @@ This is a collection of suggestions that reduce the time it takes to build the S
 
 The initial setup instructions for `swift-project` involves cloning 30+ related Swift repos. Most of these are optional, and you may never build. Review these repos and delete any that you don't need for your purposes. For example, to build the Swift compiler (the frontend), you need `cmark`, `llvm-project`, and of course `swift`. These three repos are typically all I ever use.
 
-Some of the repos are optional, but still require you to explicitly opt out from building. At the time of writing, the new `swift-driver` is optional but you need to call `build-script` withi `--skip-early-swift-driver` to opt-out from building it. On the flip side, if you want to build `swift-driver`, then you need to keep the `swift-driver`, `llbuild`, `yams`, `swift-argument-parser`, and `swift-tools-support-core` repos.
+Some of the repos are optional, but still require you to explicitly opt out from building. At the time of writing, the new `swift-driver` is optional but you need to call `build-script` with `--skip-early-swift-driver` to opt-out from building it. On the flip side, if you want to build `swift-driver`, then you need to keep the `swift-driver`, `llbuild`, `yams`, `swift-argument-parser`, and `swift-tools-support-core` repos.
 
 ### Build for Release (Swift & Clang)
 
@@ -37,6 +37,8 @@ This workflow uses three commands, `#`, `O` and `+`. These three, and a few othe
 
 Using `O0` ensures the file is compiled with `-O0`, and using `+-g` adds the `-g` flag to generate debug info.
 
+*Update*: [Jordan Rose points out](https://twitter.com/UINT_MIN/status/1460853194796331008) that "LLVM doesn't promise that optimized and non-optimized builds are compatible. In practice it does usually work though". In my experience, where I apply this technique to my work in LLDB, I have had no issues and I use this quite regularly.
+
 Admittedly, this workflow is not ideal, the extra touch & build steps are manual and add a bit of time, but overall I find the workflow to be a net positive.
 
 I use this workflow for my edit-compile-test cycle. For every file I edit, I want it compiled at `-O0`, to achieve this I use `CCC_OVERRIDE_OPTIONS` for all incremental builds. To make this easy, I use a zsh global macro:
@@ -49,6 +51,8 @@ DBG ninja clang
 There are other ways you could control which files are built for debug, without `CCC_OVERRIDE_OPTIONS`. One way is to create a "compiler launcher" script that adds or removes flags before clang gets called (see [`CMAKE_CXX_COMPILER_LAUNCHER`](https://cmake.org/cmake/help/latest/variable/CMAKE_LANG_COMPILER_LAUNCHER.html#variable:CMAKE_%3CLANG%3E_COMPILER_LAUNCHER)), but I haven't tried this.
 
 ### Use a `.noindex` Build Directory (Swift & Clang, macOS only)
+
+*Update*: Richard Howell asked whether this is still valid. Admittedly, it's been years since I've measured this. I did a pair of builds today, with and without `.noindex`, and the delta was marginal.
 
 On macOS, directories with a `.noindex` suffix are not indexed by Spotlight. Builds produce a lot of build artifacts, and you probably don't want any CPU contention created by Spotlight indexing during the build.
 
