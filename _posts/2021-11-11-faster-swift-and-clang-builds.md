@@ -37,7 +37,7 @@ This workflow uses three commands, `#`, `O` and `+`. These three, and a few othe
 
 Using `O0` ensures the file is compiled with `-O0`, and using `+-g` adds the `-g` flag to generate debug info.
 
-*Update*: [Jordan Rose points out](https://twitter.com/UINT_MIN/status/1460853194796331008) that "LLVM doesn't promise that optimized and non-optimized builds are compatible. In practice it does usually work though". In my experience, where I apply this technique to my work in LLDB, I have had no issues and I use this quite regularly.
+*Update*: [Jordan Rose points out](https://twitter.com/UINT_MIN/status/1460853194796331008) that "LLVM doesn't promise that optimized and non-optimized builds are compatible. In practice it does usually work though". In my experiences, I have not had any issues mixing opt and non-opt while working on LLDB, and I use this technique regularly.
 
 Admittedly, this workflow is not ideal, the extra touch & build steps are manual and add a bit of time, but overall I find the workflow to be a net positive.
 
@@ -52,7 +52,7 @@ There are other ways you could control which files are built for debug, without 
 
 ### Use a `.noindex` Build Directory (Swift & Clang, macOS only)
 
-*Update*: Richard Howell asked whether this is still valid. Admittedly, it's been years since I've measured this. I did a pair of builds today, with and without `.noindex`, and the delta was marginal.
+*Update*: Richard Howell asked whether this is still valid. Admittedly, it's been years since I've measured the effect of `.noindex`. So, I did a pair of builds, with and without `.noindex`, and the time savings was negligible. This suggestion can be ignored.
 
 On macOS, directories with a `.noindex` suffix are not indexed by Spotlight. Builds produce a lot of build artifacts, and you probably don't want any CPU contention created by Spotlight indexing during the build.
 
